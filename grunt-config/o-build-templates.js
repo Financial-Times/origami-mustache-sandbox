@@ -5,6 +5,9 @@ module.exports = {
 		'o-wrapper': {
 			topbaritems: 'o-inner3/main',
 			othertopbaritems: './not-bower/othertemplate'
+		},
+		'o-inner2': {
+			dynamicstuff: './not-bower/nottemplate.html'
 		}
 	}
 };

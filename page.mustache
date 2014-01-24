@@ -7,9 +7,16 @@
 	<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 	<link rel='stylesheet' href='/css/{{templateName}}.{{page.version}}.min.css' />
 	<script src="/js/modernizr-custom.js"></script>
+	<style>section {padding-left: 10px;}</style>
 </head>
 <body>
-	{{> origami-templates/o-wrapper/main.mustache}}
-	{{> ./not-bower/template.mustache}}
+	<h2>Importing the main o-wrapper template</h2>
+	<section>
+		{{> origami-templates/o-wrapper/main.mustache}}
+	</section>
+	<h2>Importing a template provided by the product itself</h2>
+	<section>
+		{{> ./not-bower/template.mustache}}
+	</section>
 </body>
 </html>

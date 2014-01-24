@@ -1,17 +1,28 @@
 <header class="o-ft-header" data-o-component="ft-header" data-o-version="0.4.1">
   <div class="o-ft-header__topbar">
     <div class="o-ft-header__topbar__content">
-      {{o-wrapper.title}}
-      {{#o-wrapper.topbarItems}}
-          {{{o-wrapper.topbarItems}}}
-      {{/o-wrapper.topbarItems}}
+      <h1>Wrapper's title: {{o-wrapper.title}}</h1>
+      
+      <h2>Injecting content in a dynamic partial which config sets as being o-inner3/main</h2>
+      <section>
+        {{o-wrapper !> topbaritems }}
+      </section>
+      <h2>Injecting content in a dynamic partial which config sets as being provided by the product</h2>
+      <section>
+        {{o-wrapper !> othertopbaritems }}
+      </section>
 
-      {{ > o-wrapper#!topbaritems }}
-      {{ > o-wrapper#!othertopbaritems }}
+      <h2>Injecting content from another module's template</h2>
+      <section>
+        {{ > o-inner1/main}}
+      </section>
+      <h2>Injecting content from the wrapper module's own partial</h2>
+      <section>
+         {{ > o-wrapper/partial}}
+      </section>
+      
 
-      {{ > o-inner1/main}}
-
-      {{ > o-wrapper/partial}}
+     
     </div>
   </div>
 </header>
