@@ -1,4 +1,9 @@
 module.exports = {
 	files: ["page.mustache"],
-	pathToCompiled: undefined
+	pathToCompiled: undefined,
+	dynamicPartials: {
+		'o-wrapper': {
+			topbaritems: 'o-inner2/main'
+		}
+	}
 };

@@ -1,7 +1,0 @@
-{
-  "description": "Web font loader",
-  "origamiType": "module",
-  "origamiVersion": 1,
-  "support": "web.team@ft.com",
-  "supportStatus": "active"
-}

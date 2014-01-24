@@ -1,8 +1,0 @@
-{
-	"description": "FT signin/out widget",
-	"origamiType": "module",
-	"origamiVersion": 1,
-	"support": "rhys.evans@ft.com",
-	"supportStatus": "not implemented",
-	"demos": ["demos/main.html"]
-}

@@ -2,14 +2,24 @@ module.exports = function (grunt) {
 
     function inlineOrigamiPartials (template, outerModule) {
         var origamiTemplatesDirectory = grunt.config('o-build-templates.pathToCompiled') || 'origami-templates',
-            origamiPartialsRX = '(?:' + origamiTemplatesDirectory.replace('\\', '\\\\') + '\\/)?(o\\-[a-z\\d\\-]+)((?:\\/[\\w\\d\\-]+)*\\/[\\w\\d\\-]+)',
-            otherPartialsRX = '((?:\\.?\\/)?[a-z\\d\\-\\/]+)',
-            parserRX = new RegExp('\\{\\{ *> *(?:' + origamiPartialsRX + '|' + otherPartialsRX +')(?:\\.mustache)? *\\}\\}', 'gi');
+            origamiDynamicPartialRX = '(o\\-[a-z\\d\\-]+)#!([a-z\\d\\-]+)',
+            origamiPartialRX = '(?:' + origamiTemplatesDirectory.replace('\\', '\\\\') + '\\/)?(o\\-[a-z\\d\\-]+)((?:\\/[\\w\\d\\-]+)*\\/[\\w\\d\\-]+)',
+            otherPartialRX = '((?:\\.?\\/)?[a-z\\d\\-\\/]+)',
+            parserRX = new RegExp('\\{\\{ *> *(?:' + origamiDynamicPartialRX + '|' + origamiPartialRX + '|' + otherPartialRX +')(?:\\.mustache)? *\\}\\}', 'gi');
 
 
-        var newTemplate = grunt.file.read(template).replace(parserRX, function ($0, innerModule, template, productTemplate) {
-            if (innerModule && template) {
-                var result = inlineOrigamiPartials('./bower_components/' + innerModule + template + '.mustache', innerModule);
+        var newTemplate = grunt.file.read(template).replace(parserRX, function ($0, innerModuleA, dynamicPartial, innerModuleB, template, productTemplate) {
+            if (innerModuleA && dynamicPartial) {
+                if (innerModuleA !==  outerModule) {
+                    grunt.fail.fatal('Incorrect attempt to include a dynamic partial of ' + innerModuleA + ' in a template of ' + (outerModule ? outerModule : 'your product') + '. ' +
+                        'Dynamic partials should only be used within the origami module that defines them.');
+                }
+                var newPartial = grunt.config('o-build-templates.dynamicPartials.' + innerModuleA + '.' + dynamicPartial);
+                var result = inlineOrigamiPartials('./bower_components/' + newPartial + '.mustache', innerModuleA );
+                return result;
+
+            } else if (innerModuleB && template) {
+                var result = inlineOrigamiPartials('./bower_components/' + innerModuleB + template + '.mustache', innerModuleB);
                 if (outerModule) {
                     return result;
                 } else {

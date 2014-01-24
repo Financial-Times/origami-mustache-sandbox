@@ -3,10 +3,10 @@
     <div class="o-ft-header__topbar__content">
       {{o-wrapper.title}}
       {{#o-wrapper.topbarItems}}
-        <div class="o-ft-header__topbar__items">
           {{{o-wrapper.topbarItems}}}
-        </div>
       {{/o-wrapper.topbarItems}}
+
+      {{ > o-wrapper#!topbaritems }}
 
       {{ > o-inner1/main}}
 
