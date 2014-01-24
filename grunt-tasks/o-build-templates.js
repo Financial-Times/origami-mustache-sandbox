@@ -24,14 +24,18 @@ module.exports = function (grunt) {
                 }
                 var newPartial = grunt.config('o-build-templates.dynamicPartials.' + innerModuleA + '.' + dynamicPartial);
 
-                if (newPartial.indexOf('o-') === 0) {
-                    var result = inlineOrigamiPartials(path.join(process.cwd(), 'bower_components/' + addFileExtension(newPartial)), newPartial.split('/').shift());     
-                } else {
-                    var result = inlineOrigamiPartials(path.join(process.cwd(), addFileExtension(newPartial)), newPartial.split('/').shift());     
-                }
+                if (newPartial) {
 
-               
-                return result;
+                    if (newPartial.indexOf('o-') === 0) {
+                        var result = inlineOrigamiPartials(path.join(process.cwd(), 'bower_components/' + addFileExtension(newPartial)), newPartial.split('/').shift());     
+                    } else {
+                        var result = inlineOrigamiPartials(path.join(process.cwd(), addFileExtension(newPartial)), newPartial.split('/').shift());     
+                    }
+
+                    return result;
+                } else {
+                    return '';
+                }
 
             } else if (innerModuleB && innerTemplate) {
                 var result = inlineOrigamiPartials(path.join(process.cwd(),'bower_components/' + innerModuleB + addFileExtension(innerTemplate)), innerModuleB);
