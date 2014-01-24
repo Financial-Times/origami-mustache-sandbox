@@ -1,3 +1,1 @@
-module.exports = {
-  pre: ['./build']
-};
+module.exports = ['.origami-templates']

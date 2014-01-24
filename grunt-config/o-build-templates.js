@@ -3,7 +3,8 @@ module.exports = {
 	pathToCompiled: undefined,
 	dynamicPartials: {
 		'o-wrapper': {
-			topbaritems: 'o-inner2/main'
+			topbaritems: 'o-inner3/main',
+			othertopbaritems: './not-bower/othertemplate'
 		}
 	}
 };

@@ -25,6 +25,9 @@ app.get('/', function (req, res) {
 		'o-inner2': {
 			title: 'Title for inner2',
 			additional: "additional content for inner2"
+		},
+		'o-inner3': {
+			title: 'Title for inner3'
 		}
 	});
 });
