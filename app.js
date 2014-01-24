@@ -14,9 +14,17 @@ app.use(express.compress());
 
 app.get('/', function (req, res) {
 	res.render("./origami-templates/page", {
-		page: {
-			version: pkg.version,
-			title: "Index page"
+		'o-wrapper': {
+			title: 'Title for wrapper',
+			additional: "additional content for wrapper"
+		},
+		'o-inner1': {
+			title: 'Title for inner1',
+			additional: "additional content for inner1"
+		},
+		'o-inner2': {
+			title: 'Title for inner2',
+			additional: "additional content for inner2"
 		}
 	});
 });
