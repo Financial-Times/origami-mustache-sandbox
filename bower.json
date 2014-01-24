@@ -1,0 +1,14 @@
+{
+    "name": "mustache-test",
+    "version": "0.0.0",
+    "ignore": [
+        "**/.*",
+        "node_modules",
+        "components"
+    ],
+    "dependencies": {
+        "jquery": "1.10.x",
+        "o-ft-header": "http://git.svc.ft.com:9080/git/origami/o-ft-header.git#>=0.4.0",
+        "o-ft-signin": "http://git.svc.ft.com:9080/git/origami/o-ft-signin.git"
+    }
+}

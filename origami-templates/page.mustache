@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+	<meta charset="utf-8" />
+	<title>{{page.title}} - FT.com</title>
+	<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+	<link rel='stylesheet' href='/css/{{templateName}}.{{page.version}}.min.css' />
+	<script src="/js/modernizr-custom.js"></script>
+</head>
+<body>
+	<header class="o-ft-header" data-o-component="ft-header" data-o-version="0.4.1">
+  <div class="o-ft-header__topbar">
+    <div class="o-ft-header__topbar__content">
+
+      {{#o-wrapper.topbarItems}}
+        <div class="o-ft-header__topbar__items">
+          {{{o-wrapper.topbarItems}}}
+        </div>
+      {{/o-wrapper.topbarItems}}
+
+      
+    </div>
+  </div>
+</header>
+	{{> ./not-bower/template.mustache}}
+</body>
+</html>

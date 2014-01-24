@@ -1,0 +1,10 @@
+{
+	"description": "SASS variables defining FT brand colours",
+	"origamiType": "module",
+	"origamiVersion": 1,
+	"support": "dan.skinner@ft.com",
+	"supportStatus": "active",
+	"demos": [
+		"/demos/demo.html"
+	]
+}

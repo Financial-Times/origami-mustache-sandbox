@@ -1,0 +1,26 @@
+@import "o-ft-header/main";
+
+$o-ft-signin-is-silent: false !default;
+
+/* Load fonts */
+@if (not $o-ft-signin-is-silent) {
+	@include oFontsInclude(BentonSans);
+}
+
+.o-ft-signin {
+	@extend %o-ft-header__topbar__item;
+}
+
+.o-ft-signin--anonymous {
+	font-size: 0;
+	color: rgba(0,0,0,0);
+	&:hover {
+		text-decoration: none;
+	}
+	&:after {
+		font-size: 25px;
+		content: '\f020';
+		color: #888;
+	}
+}
+

@@ -1,0 +1,20 @@
+{
+  "name": "o-assets",
+  "main": [
+    "main.scss",
+    "main.js"
+  ],
+  "ignore": [
+    "README.md"
+  ],
+  "version": "0.2.2",
+  "_release": "0.2.2",
+  "_resolution": {
+    "type": "version",
+    "tag": "0.2.2",
+    "commit": "1bcda263d73f2e5f1a9e64def42e3b05850aee45"
+  },
+  "_source": "http://git.svc.ft.com:9080/git/origami/o-assets.git",
+  "_target": "~0.2.0",
+  "_originalSource": "http://git.svc.ft.com:9080/git/origami/o-assets.git"
+}
