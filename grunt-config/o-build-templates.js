@@ -1,3 +1,4 @@
 module.exports = {
-	files: ["page.mustache"]
+	files: ["page.mustache"],
+	pathToCompiled: undefined
 };

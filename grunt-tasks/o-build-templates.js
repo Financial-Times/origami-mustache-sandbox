@@ -1,19 +1,20 @@
 module.exports = function (grunt) {
 
 	function inlineOrigamiPartials (template, outerModule) {
-		var newTemplate = grunt.file.read(template).replace(/\{\{ *> *(o\-[a-z\d\-]+)((?:\/[\w\d\-]+)*\/[\w\d\-]+)(?:\.mustache)? *\}\}/g, function ($0, innerModule, template) {
-			// if (innerModule === outerModule) {
+		var compiledFolder = grunt.config('o-build-templates.pathToCompiled') || 'origami-templates',
+			origamiPartialRX = new RegExp('\\\{\\\{ *> *(?:' + compiledFolder + '\\\/)?(o\-[a-z\\\d\\\-]+)((?:\\\/[\\\w\d\\\-]+)*\\\/[\\\w\\\d\\\-]+)(?:\\\.mustache)? *\\\}\\\}', 'gi');
 
-			// } else {
-				return inlineOrigamiPartials('./bower_components/' + innerModule + template + '.mustache', innerModule);	
-			// }
 
-			
+		var newTemplate = grunt.file.read(template).replace(origamiPartialRX, function ($0, innerModule, template) {
+			var result = inlineOrigamiPartials('./bower_components/' + innerModule + template + '.mustache', innerModule);
+			if (outerModule) {
+				return result;
+			} else {
+				return $0;
+			}
 		});
 		if (outerModule) {
 			grunt.file.write('origami-templates/' + outerModule + template.split(outerModule).pop(), newTemplate);
-		} else {
-			grunt.file.write('origami-templates/' + template, newTemplate);			
 		}
 		return newTemplate;
 	}

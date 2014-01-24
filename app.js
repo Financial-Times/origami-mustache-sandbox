@@ -13,7 +13,7 @@ mustacheInit.init(app, mu);
 app.use(express.compress());
 
 app.get('/', function (req, res) {
-	res.render("./origami-templates/page", {
+	res.render("./page", {
 		'o-wrapper': {
 			title: 'Title for wrapper',
 			additional: "additional content for wrapper"
