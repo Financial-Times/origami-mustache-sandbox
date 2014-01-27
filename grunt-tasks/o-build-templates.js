@@ -2,7 +2,6 @@ var path = require('path');
 
 
 function addFileExtension (path) {
-    console.log('path', path);
     return /\.(html|mustache)$/.test(path) ? path : (path + '.mustache');
 }
 
@@ -17,66 +16,99 @@ function parseSettings(settings) {
     return obj;
 }
 
-function inlineOrigamiPartials (template, outerModule, outerSettings) {
 
-    outerSettings = outerSettings || {};
-    var origamiTemplatesDirectory = grunt.config('o-build-templates.pathToCompiled') || 'origami-templates',
-        // matches stings of the form o-modulename !> path/to/partial (forgiving of whitespace)
-        origamiDynamicPartialRX = '(o\\-[a-z\\d\\-]+) *!> *([a-z\\d\\-]+)',
-        // matches stings of the form o-modulename/path/to/template 
-        origamiPartialRX = '(?:' + origamiTemplatesDirectory.replace('\\', '\\\\') + '\\/)?(o\\-[a-z\\d\\-]+)((?:\\/[\\w\\d\\-]+)*\\/[\\w\\d\\-]+)',
+function analyzeMustacheContent (content) {
+    
+    var parsedMustache,
+        origamiTemplatesDirectory = grunt.config('o-build-templates.pathToCompiled') || 'origami-templates',
+        origamiPartialRX = '> *(?:' + origamiTemplatesDirectory.replace('\\', '\\\\') + '\\/)?(o\\-[a-z\\d\\-]+)((?:\\/[\\w\\d\\-]+)*\\/[\\w\\d\\-]+)',
         // matches stings of the form o-modulename/path/to/template!items=path/to/partial,moreitems=path/to/other/partial
-        origamiPartialWithSettingsRX = origamiPartialRX + '(?:!(\\w+=[\\w\\/\\-]+(?:,\\w+=[\\w\\/\\-.]+)+))?',
-         // matches stings of the form [./]path/to/template 
-        otherPartialRX = '((?:\\.?\\/)?[a-z\\d\\-\\/]+)',
-        staticPartialRX = '> *(?:' + origamiPartialWithSettingsRX + '|' + otherPartialRX +')(?:\\.mustache)?',
-        parserRX = new RegExp('\\{\\{ *' + '(?:' + origamiDynamicPartialRX + '|' + staticPartialRX + ') *\\}\\}', 'gi');
+        origamiPartialWithSettingsRX = new RegExp(origamiPartialRX + '(?:!(\\w+=[\\w\\/\\-]+(?:,\\w+=[\\w\\/\\-.]+)+))?(\\.(?:mustache|html))?', 'gi'),
+        dynamicPartialRX = /(o\-[a-z\d\-]+) *!> *([a-z\d\-]+)/gi,
+        normalPartialRX = /> *((?:\.?\/)?[a-z\d\-\/]+)(\.mustache|\.html)?/gi;
 
+    if (parsedMustache = dynamicPartialRX.exec(content)) {
+        return {
+            type: 'dynamicPartial',
+            module: parsedMustache[1],
+            property: parsedMustache[2]
+        };
+    } else if (parsedMustache = origamiPartialWithSettingsRX.exec(content)) {
+        return {
+            type: 'origamiPartial',
+            module: parsedMustache[1],
+            template: parsedMustache[2],
+            settings: parseSettings(parsedMustache[3]),
+            fileExtension: parsedMustache[4] || '.mustache'
+        };
+    } else if (parsedMustache = normalPartialRX.exec(content)) {
+        return {
+            type: 'normalPartial',
+            template: parsedMustache[1],
+            fileExtension: parsedMustache[2] || '.mustache'
+        };
+    }
+    return {};
 
-    var newTemplate = grunt.file.read(template).replace(parserRX, function ($0, innerModuleA, dynamicPartial, innerModuleB, innerTemplate, templateSettings, productTemplate) {
-        if (innerModuleA && dynamicPartial) {
-            if (innerModuleA !== outerModule) {
-                grunt.fail.fatal('Incorrect attempt to include a dynamic partial of ' + innerModuleA + ' in a template of ' + (outerModule ? outerModule : 'your product') + '. ' +
+}
+
+function inlineOrigamiPartials (template, module, settings) {
+
+    settings = settings || {};
+
+    var origamiTemplatesDirectory = grunt.config('o-build-templates.pathToCompiled') || 'origami-templates';
+
+    var newTemplate = grunt.file.read(template).replace(/\{\{ *([^(?:\}\})]*) *\}\}/g, function ($0, content) {
+        var action = analyzeMustacheContent(content),
+            result;
+        if (action.type === 'dynamicPartial') {
+            if (action.module !== module) {
+                grunt.fail.fatal('Incorrect attempt to include a dynamic partial of ' + action.module + ' in a template of ' + (module ? module : 'your product') + '. ' +
                     'Dynamic partials should only be used within the origami module that defines them.');
             }
 
-            var newPartial = grunt.config('o-build-templates.dynamicPartials.' + innerModuleA + '.' + dynamicPartial) || outerSettings[dynamicPartial];
+            var newPartial = grunt.config('o-build-templates.dynamicPartials.' + action.module + '.' + action.property) || settings[action.property];
 
             if (newPartial) {
 
                 if (newPartial.indexOf('o-') === 0) {
-                    var result = inlineOrigamiPartials(path.join(process.cwd(), 'bower_components/' + addFileExtension(newPartial)), newPartial.split('/').shift());     
+                    result = inlineOrigamiPartials(path.join(process.cwd(), 'bower_components/' + addFileExtension(newPartial)), newPartial.split('/').shift());
                 } else {
-                    var result = inlineOrigamiPartials(path.join(process.cwd(), addFileExtension(newPartial)), newPartial.split('/').shift());     
+                    result = inlineOrigamiPartials(path.join(process.cwd(), addFileExtension(newPartial)), newPartial.split('/').shift());
                 }
 
                 return result;
             } else {
                 return '';
             }
-
-        } else if (innerModuleB && innerTemplate) {
-            if (templateSettings) {
+        } else if (action.type === 'origamiPartial') {
+            if (action.settings) {
                 
-                var result = inlineOrigamiPartials(path.join(process.cwd(),'bower_components/' + innerModuleB + addFileExtension(innerTemplate)), innerModuleB, parseSettings(templateSettings));
+                result = inlineOrigamiPartials(path.join(process.cwd(),'bower_components/' + action.module + action.template + action.fileExtension), action.module, action.settings);
             } else {
-                var result = inlineOrigamiPartials(path.join(process.cwd(),'bower_components/' + innerModuleB + addFileExtension(innerTemplate)), innerModuleB, {});    
+                result = inlineOrigamiPartials(path.join(process.cwd(),'bower_components/' + action.module + action.template + action.fileExtension), action.module, {});
             }
             
-            if (outerModule) {
+            if (module) {
                 return result;
             } else {
                 return $0;
             }
-        } else if (productTemplate) {
+        } else if (action.type === 'normalPartial') {
             // it's not an origami partial so we just treat it as a relative path
-            inlineOrigamiPartials(path.join(process.cwd(), addFileExtension(productTemplate) ));
+            inlineOrigamiPartials(path.join(process.cwd(), action.template + action.fileExtension ));
+            return $0;
+        } else {
+            return $0;
         }
+
     });
-    if (outerModule) {
-        grunt.file.write(origamiTemplatesDirectory + '/' + outerModule + template.split(outerModule).pop(), newTemplate);
+
+    if (module) {
+        grunt.file.write(origamiTemplatesDirectory + '/' + module + template.split(module).pop(), newTemplate);
     }
     return newTemplate;
+
 }
 
 var grunt,
