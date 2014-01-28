@@ -78,7 +78,7 @@ module.exports = [
     function (test) {
         task.exec('./tests/test3.mustache');
         test.ok(exists('./origami-templates/o-test3/main.mustache'));
-        test.equals(read('./origami-templates/o-test3/main.mustache'), 'rootsubdirectorysubdirectoryhtml');
+        test.equals(read('./origami-templates/o-test3/main.mustache'), 'rootsubdirectorysubdirectoryhtmlsvg');
         finish(test);
     },
 
