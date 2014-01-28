@@ -96,18 +96,18 @@ module.exports = [
         grunt.config.set('o-build-templates.dynamicPartials.o-test5.dynamicPartial2', './tests/test5.html');
         task.exec('./tests/test5.mustache');
         test.ok(exists('./origami-templates/o-test5/main.mustache'));
-        test.equals(read('./origami-templates/o-test5/main.mustache'), 'test1test2-partialtest5');
+        test.equals(read('./origami-templates/o-test5/main.mustache'), 'test1test2-partialtest5not-overriden');
         grunt.config.set('o-build-templates.dynamicPartials', null);
         finish(test);
     },
 
-    // using an origami template that can have arbitrary content injected into a region, specified using the template
-    function (test) {
-        task.exec('./tests/test6.mustache');
-        test.ok(exists('./origami-templates/o-test6/main.mustache'));
-        test.equals(read('./origami-templates/o-test6/main.mustache'), 'test1test2-partialtest5');
-        finish(test);
-    }
+    // // using an origami template that can have arbitrary content injected into a region, specified using the template
+    // function (test) {
+    //     task.exec('./tests/test6.mustache');
+    //     test.ok(exists('./origami-templates/o-test6/main.mustache'));
+    //     test.equals(read('./origami-templates/o-test6/main.mustache'), 'test1test2-partialtest5');
+    //     finish(test);
+    // }
 ];
 
 
