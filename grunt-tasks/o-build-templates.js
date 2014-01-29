@@ -1,8 +1,7 @@
 var path = require('path');
 
-
 function addFileExtension (path) {
-    return /\.(html|mustache)$/.test(path) ? path : (path + '.mustache');
+    return /\.(html|mustache|svg)$/.test(path) ? path : (path + '.mustache');
 }
 
 function parseSettings(settings) {
@@ -21,9 +20,9 @@ function analyzeMustacheContent (content) {
     
     var parsedMustache,
         origamiTemplatesDirectory = grunt.config('o-build-templates.pathToCompiled') || 'origami-templates',
-        origamiPartialRX = new RegExp('> *(?:' + origamiTemplatesDirectory.replace('\\', '\\\\') + '\\/)?(o\\-[a-z\\d\\-]+)((?:\\/[\\w\\d\\-]+)*\\/[\\w\\d\\-]+)(\.mustache|\.html|\.svg)?', 'gi'),
+        origamiPartialRX = new RegExp('> *(?:' + origamiTemplatesDirectory.replace('\\', '\\\\') + '\\/)?(o\\-[a-z\\d\\-]+)((?:\\/[\\w\\d\\-_]+)*\\/[\\w\\d\\-]+)(\\.mustache|\\.html|\\.svg)?', 'gi'),
         // matches stings of the form o-modulename/path/to/template!items=path/to/partial,moreitems=path/to/other/partial
-        normalPartialRX = /> *((?:\.?\/)?[a-z\d\-\/]+)(\.mustache|\.html|\.svg)?/gi;
+        normalPartialRX = /> *((?:\.?\/)?[a-z\d\-\/_]+)(\.mustache|\.html|\.svg)?/gi;
 
     if (parsedMustache = origamiPartialRX.exec(content)) {
         return {
@@ -44,13 +43,15 @@ function analyzeMustacheContent (content) {
 }
 
 function inlineOrigamiPartials (template, module, settings) {
-
     settings = settings || {};
 
     var origamiTemplatesDirectory = grunt.config('o-build-templates.pathToCompiled') || 'origami-templates',
-        newTemplate = grunt.file.read(template).replace(/\{\{ *([^(?:\}\})]*) *\}\}/g, function ($0, content) {
+        newTemplate = grunt.file.read(template).replace(/\{\{(?!\!) *([^(?:\}\})]*) *\}\}/g, function ($0, content) {
             var action = analyzeMustacheContent(content),
                 result;
+
+                console.log(action);
+
             if (action.type === 'origamiPartial') {
                 var newPartial = grunt.config('o-build-templates.dynamicPartials.' + action.module + '.' + action.template.replace(/^\.?\/?/, ''));
 
@@ -98,9 +99,12 @@ var grunt,
     grunt.registerTask('o-build-templates', function () {
         grunt.config.requires('o-build-templates.files');
 
-        var templates = grunt.config('o-build-templates.files');
+        var templates = grunt.file.expand(grunt.config('o-build-templates.files'));
+        
 
-        templates.forEach(inlineOrigamiPartials);
+        templates.forEach(function (tpl) {
+            inlineOrigamiPartials(tpl);
+        });
     });
 
 };
